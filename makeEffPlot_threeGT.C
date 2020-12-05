@@ -24,10 +24,10 @@ void makeEffPlot_threeGT(TString st_name = "HLT_HIL3DoubleMuOpen_v1", bool isPt=
   double posy1 = 0.78;
   double posy2 = 0.90;
  //std::cout<< "TEST_________________________________________________TEST, N:"<<coco<< std::endl; coco++; 
-  string ResDirN = "EffPlotRes_three"; 
+  string ResDirN = "EffPlotRes_HP_v2_three"; 
   const char* varn[3] = {"p_{T} (GeV/c)", "#eta", "y"};
 
-  TFile* f1 = new TFile("outputEff.root","read");
+  TFile* f1 = new TFile("outputEff_HP_v2.root","read");
   TList* listofkeys = f1->GetListOfKeys();
   for(int key=0; key < listofkeys->GetEntries(); key++){
     TString st_name = listofkeys->At(key)->GetName();
@@ -84,7 +84,6 @@ void makeEffPlot_threeGT(TString st_name = "HLT_HIL3DoubleMuOpen_v1", bool isPt=
     grtrk->SetPointError(ip,ex,ex,eyl_r,eyh_r);
   }
 
- std::cout<< "TEST_________________________________________________TEST, N:"<<coco<< std::endl; coco++; 
   for(int ip=0; ip<gonl->GetN(); ip++)
   {
     double px,py,px_,py_,ex,eyh,eyl,ex_,eyh_,eyl_;
