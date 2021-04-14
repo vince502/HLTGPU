@@ -10,8 +10,8 @@
 #include "plotTurnOn.h"
 
 void matchEvt_map(){
-  std::string of = "./HLTTrees/HLTTree_HP_CPU";
-  std::string reco = "../store/Forest_HIMinimumBias2_run327237_merged.root";
+  std::string of = "./Large_files/CPUPAT_openHLT_11_2_1";
+  std::string reco = "/cms/ldap_home/vince402/CMSSW_11_1_0_pre5/src/L3MuEffStudy/Large_Files/Forest_HIMinimumBias2_run327237_merged.root";
   RecoReader recoInfo(reco, false);
   const auto nEntries = recoInfo.getEntries();
   TFile* l3t = new TFile((of+".root").c_str(),"open");
@@ -65,7 +65,7 @@ void matchEvt_map(){
     std::cout<< "Done Matching" <<std::endl;
     
     std::ofstream out;
-    out.open(Form("realEvtpair.txt",of.c_str()));
+    out.open(Form("realEvtpair_CPUPAT1121.txt",of.c_str()));
     out << "first second" << std::endl;
     int count2=0;
     for(std::map<int, int>::iterator itt = idxlist.begin(); itt != idxlist.end(); itt++){

@@ -27,7 +27,7 @@ void makeEffPlot_threeGT(TString st_name = "HLT_HIL3DoubleMuOpen_v1", bool isPt=
   string ResDirN = "EffPlotRes_HP_v2_three"; 
   const char* varn[3] = {"p_{T} (GeV/c)", "#eta", "y"};
 
-  TFile* f1 = new TFile("outputEff_HP_v2.root","read");
+  TFile* f1 = new TFile("outputEff_gpu_sync.root","read");
   TList* listofkeys = f1->GetListOfKeys();
   for(int key=0; key < listofkeys->GetEntries(); key++){
     TString st_name = listofkeys->At(key)->GetName();

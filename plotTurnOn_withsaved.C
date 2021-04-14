@@ -12,13 +12,15 @@ bool SetOEntry(const std::pair<Long64_t, Long64_t>& recoevt, TTree* t1){
   return true;
 };
 
-void plotTurnOn_withsaved_MB()
+string CMSSWver = "11_2_1";
+string gTag = "HP";
+void plotTurnOn_withsaved()
 {
   const std::string recFilePath = "/cms/ldap_home/vince402/CMSSW_11_1_0_pre5/src/L3MuEffStudy/Large_Files/Forest_HIMinimumBias2_run327237_merged.root";
   const std::vector<std::pair<std::string, std::string> > hltFilePath = {
-      {"CPU", "./Large_files/CPUlegacy_openHLT.root"},
-      {"CPU_Patatrack","./Large_files/CPUPAT_openHLT.root"},
-      {"GPU","./Large_files/GPUPAT_openHLT.root"}
+      {"CPU", Form("./Large_files/openHLT_GPUPatatrack_%s_%s.root",gTag.c_str(), CMSSWver.c_str())},
+      {"CPU_Patatrack",Form("./Large_files/openHLT_CPUPatatrack_%s_%s.root",gTag.c_str(),CMSSWver.c_str())},
+      {"GPU",Form("./Large_files/openHLT_CPUlegacy_%s_%s.root", gTag.c_str(),CMSSWver.c_str())}
   };
   const std::map<std::string, int> COLOR = { {"CPU", kBlack}, {"CPU_Patatrack", kRed}, {"GPU", kBlue} };
 
@@ -57,7 +59,7 @@ void plotTurnOn_withsaved_MB()
   auto fillEfficiency = [=](int idx)
   {
     // Added pointer for GPU event sync
-    TFile* GPUf = new TFile("./Large_files/GPUPAT_openHLT.root","read");
+    TFile* GPUf = new TFile("./Large_files/GPUPAT_openHLT_11_2_1.root","read");
     TTree* t1 = (TTree*) GPUf->Get("hltanalysis/HltTree");
     Int_t  oRun;
     ULong64_t oEvent;
@@ -67,8 +69,10 @@ void plotTurnOn_withsaved_MB()
     auto c_start = std::clock();
     const auto& n = doParticle.size();
     const auto& hltFileP = hltFilePath[idx/n];
+    std::cout << "[INFO] CORE: "<<idx<<" hltFileP = " << hltFileP.second << std::endl;
     const auto& pTag = *std::next(doParticle.begin(), idx%n);
     auto parName = pTag; parName[0] = toupper(parName[0]);
+//    std::cout << "[INFO] Core"<< idx << " running dataset " << hltFileP.second<< std::endl;
 
 
     std::set<int> idxS;
@@ -96,7 +100,9 @@ void plotTurnOn_withsaved_MB()
     for (const auto& iEntry : ROOT::TSeqUL(nEntries)) {
       if ((iEntry%100000)==0) { std::cout << "[INFO] Core " << idx << ":  Processing event " << iEntry << " / " << nEntries << std::endl; }
       recoInfo.setEntry(iEntry, false, true);
-      if (!triggerInfo.setEntry(recoInfo.getEventNumber(), false, true) && !SetOEntry(recoInfo.getEventNumber(), t1)) continue;
+      if (!SetOEntry(recoInfo.getEventNumber(), t1)) continue;
+      if (!triggerInfo.setEntry(recoInfo.getEventNumber(), false, true)) continue;
+
       // check that event pass event selection
       if (!recoInfo.passEventSelection()) continue;
       //const auto cent = recoInfo.getCentrality();
@@ -162,7 +168,7 @@ void plotTurnOn_withsaved_MB()
   gStyle->SetOptStat(0);
   gStyle->SetOptFit(0);
 
-  TFile *file = new TFile("outputEff_gpu_sync.root","recreate");
+  TFile *file = new TFile("outputEff_gpu_sync_11_2_1.root","recreate");
 
   // plot efficiencies
   for (const auto& p : effMapIdx) {
@@ -258,7 +264,7 @@ void plotTurnOn_withsaved_MB()
         CMS_lumi(&c, 33, "PbPb run 326381", "#sqrt{s_{NN}} = 5.02 TeV", false, 0.60, false);
         c.Modified(); c.Update();
         // Create Output Directory
-        const std::string plotDir = "Plot/" + par;
+        const std::string plotDir = Form("Plot_%s_%s/",pTag.c_str(), CMSSWver.c_str()) + par;
         makeDir(plotDir + "/png/");
         makeDir(plotDir + "/pdf/");
         // Save Canvas
